@@ -19,7 +19,7 @@ OFFICE_TYPES = {
 @app.route("/")
 def home():
     return render_template("home.html")
-    @app.route("/robots.txt")
+@app.route("/robots.txt")
 def robots():
     return (
         "User-agent: *\n"
