@@ -3,14 +3,6 @@ import os
 
 app = Flask(__name__)
 
-OFFICE_TYPES = {
-    "CNIC": "NADRA office",
-    "Passport": "Passport office",
-    "B-Form": "NADRA office",
-    "Driving License": "Driving License office",
-    "Vehicle Card": "Excise office",
-}
-
 
 @app.route("/")
 def home():
@@ -25,7 +17,16 @@ def vault():
 @app.route("/api/office-search")
 def office_search():
     document_type = request.args.get("type", "")
-    office = OFFICE_TYPES.get(document_type, "government office")
+
+    offices = {
+        "CNIC": "NADRA office",
+        "Passport": "Passport office",
+        "B-Form": "NADRA office",
+        "Driving License": "Driving License office",
+        "Vehicle Card": "Excise office"
+    }
+
+    office = offices.get(document_type, "government office")
 
     lat = request.args.get("lat")
     lon = request.args.get("lon")
@@ -49,7 +50,7 @@ def office_search():
 
 @app.route("/api/documents", methods=["POST"])
 def save_document():
-    data = request.get_json()
+    data = request.get_json(silent=True)
 
     if not data:
         return jsonify({
@@ -57,24 +58,9 @@ def save_document():
             "error": "No document data received"
         }), 400
 
-    name = data.get("name", "").strip()
-    document_type = data.get("type", "").strip()
-    expiry = data.get("expiry", "").strip()
-
-    if not name or not document_type or not expiry:
-        return jsonify({
-            "success": False,
-            "error": "Please provide name, type and expiry date"
-        }), 400
-
     return jsonify({
         "success": True,
-        "message": "Document received by Flask",
-        "document": {
-            "name": name,
-            "type": document_type,
-            "expiry": expiry
-        }
+        "document": data
     })
 
 
