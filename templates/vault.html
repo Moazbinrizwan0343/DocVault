@@ -1,11 +1,17 @@
-
+```html
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>My Vault — DocVault</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+  >
 </head>
 
 <body>
@@ -14,73 +20,143 @@
 
   <header class="brand">
     <img src="{{ url_for('static', filename='logo.svg') }}">
+
     <div>
       <h1>My Vault</h1>
       <p>private to this browser</p>
     </div>
   </header>
 
+
+  <!-- ADD DOCUMENT -->
+
   <section class="card">
+
     <h3>Add a document</h3>
 
     <form id="form">
 
       <div class="form-row">
-        <label for="name">Document name</label>
+
+        <label for="name">
+          Document name
+        </label>
+
         <input
           id="name"
           maxlength="60"
           placeholder="e.g. My CNIC"
           required
         >
+
       </div>
 
+
       <div class="form-row">
-        <label for="type">Document type</label>
+
+        <label for="type">
+          Document type
+        </label>
 
         <select id="type" required>
-          <option value="">Choose type</option>
-          <option value="CNIC">CNIC</option>
-          <option value="Passport">Passport</option>
-          <option value="B-Form">B-Form</option>
-          <option value="Driving License">Driving License</option>
-          <option value="Vehicle Card">Vehicle Card</option>
+
+          <option value="">
+            Choose type
+          </option>
+
+          <option value="CNIC">
+            CNIC
+          </option>
+
+          <option value="Passport">
+            Passport
+          </option>
+
+          <option value="B-Form">
+            B-Form
+          </option>
+
+          <option value="Driving License">
+            Driving License
+          </option>
+
+          <option value="Vehicle Card">
+            Vehicle Card
+          </option>
+
         </select>
+
       </div>
+
 
       <div class="form-row">
-        <label for="expiry">Expiry date</label>
-        <input id="expiry" type="date" required>
+
+        <label for="expiry">
+          Expiry date
+        </label>
+
+        <input
+          id="expiry"
+          type="date"
+          required
+        >
+
       </div>
 
-      <button type="submit" class="primary">
+
+      <button
+        type="submit"
+        class="primary"
+      >
         Save to My Vault
       </button>
 
     </form>
+
   </section>
 
+
+  <!-- DOCUMENTS -->
+
   <section class="card">
+
     <h3>My documents</h3>
+
     <div id="docs"></div>
+
   </section>
 
+
+  <!-- BACKUP -->
+
   <section class="card">
+
     <h3>Backup & restore</h3>
 
     <p class="small">
-      Your vault stays in this browser. Export a backup before clearing
-      browser data or changing devices.
+      Your vault stays in this browser.
+      Export a backup before clearing browser data
+      or changing devices.
     </p>
 
     <div class="toolbar">
-      <button type="button" class="secondary" id="export">
+
+      <button
+        type="button"
+        class="secondary"
+        id="export"
+      >
         Export backup
       </button>
 
-      <button type="button" class="secondary" id="import">
+      <button
+        type="button"
+        class="secondary"
+        id="import"
+      >
         Restore backup
       </button>
+
     </div>
 
     <input
@@ -89,100 +165,162 @@
       accept=".json,application/json"
       hidden
     >
+
   </section>
 
 </main>
 
+
 <nav class="nav">
-  <a href="/">Home</a>
-  <a class="active" href="/vault">My Vault</a>
+
+  <a href="/">
+    Home
+  </a>
+
+  <a
+    class="active"
+    href="/vault"
+  >
+    My Vault
+  </a>
+
 </nav>
+
 
 <script>
 
 const KEY = "docvault_documents";
 
-/* Get HTML elements explicitly */
 const form = document.getElementById("form");
 const nameInput = document.getElementById("name");
 const typeInput = document.getElementById("type");
 const expiryInput = document.getElementById("expiry");
 const docsContainer = document.getElementById("docs");
-const exportButton = document.getElementById("export");
-const importButton = document.getElementById("import");
-const fileInput = document.getElementById("file");
 
-/* Load saved documents */
+const exportButton =
+  document.getElementById("export");
+
+const importButton =
+  document.getElementById("import");
+
+const fileInput =
+  document.getElementById("file");
+
+
+/* Load existing browser data */
+
 let docs = [];
 
 try {
-  const stored = localStorage.getItem(KEY);
+
+  const stored =
+    localStorage.getItem(KEY);
 
   if (stored) {
-    const parsed = JSON.parse(stored);
+
+    const parsed =
+      JSON.parse(stored);
 
     if (Array.isArray(parsed)) {
       docs = parsed;
     }
+
   }
+
 } catch (error) {
-  console.error("Could not load saved documents:", error);
-  docs = [];
+
+  console.error(
+    "Could not load documents:",
+    error
+  );
+
 }
+
 
 /* Escape HTML */
+
 function esc(value) {
-  return String(value).replace(/[&<>"']/g, function(character) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[character];
-  });
+
+  return String(value).replace(
+    /[&<>"']/g,
+    function(character) {
+
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[character];
+
+    }
+  );
+
 }
 
-/* Calculate days until expiry */
-function diff(dateString) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
-  const expiryDate = new Date(dateString + "T00:00:00");
+/* Days until expiry */
+
+function diff(dateString) {
+
+  const today =
+    new Date();
+
+  today.setHours(
+    0,
+    0,
+    0,
+    0
+  );
+
+  const expiryDate =
+    new Date(
+      dateString + "T00:00:00"
+    );
 
   return Math.ceil(
-    (expiryDate - today) / 86400000
+    (
+      expiryDate - today
+    ) / 86400000
   );
+
 }
 
+
 /* Format date */
+
 function fmt(dateString) {
-  return new Date(dateString + "T00:00:00")
-    .toLocaleDateString(undefined, {
+
+  return new Date(
+    dateString + "T00:00:00"
+  ).toLocaleDateString(
+    undefined,
+    {
       day: "numeric",
       month: "short",
       year: "numeric"
-    });
+    }
+  );
+
 }
 
-/* Save documents to browser */
-function saveDocuments() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(docs));
-    render();
 
-    console.log("DocVault: document saved successfully.");
-  } catch (error) {
-    console.error("DocVault save error:", error);
+/* Save locally */
 
-    alert(
-      "Unable to save the document in this browser. " +
-      "Please check your browser storage settings."
-    );
-  }
+function saveLocal() {
+
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(docs)
+  );
+
+  render();
+
 }
+
 
 /* Display documents */
+
 function render() {
 
   if (!docs.length) {
@@ -194,21 +332,498 @@ function render() {
       '</div>';
 
     return;
+
   }
 
-  docs.sort(function(a, b) {
-    return a.expiry.localeCompare(b.expiry);
-  });
 
-  docsContainer.innerHTML = docs.map(function(d, i) {
+  docs.sort(
+    function(a, b) {
 
-    const days = diff(d.expiry);
+      return a.expiry.localeCompare(
+        b.expiry
+      );
 
-    let status;
+    }
+  );
 
-    if (days < 0) {
-      status =
-        "Expired " +
-        Math.abs(days) +
+
+  docsContainer.innerHTML =
+    docs.map(
+      function(d, i) {
+
+        const days =
+          diff(d.expiry);
+
+        let status;
+
+        if (days < 0) {
+
+          status =
+            "Expired " +
+            Math.abs(days) +
+            " " +
+            (
+              Math.abs(days) === 1
+                ? "day"
+                : "days"
+            ) +
+            " ago";
+
+        } else if (days === 0) {
+
+          status =
+            "Expires today";
+
+        } else {
+
+          status =
+            "Will expire in " +
+            days +
+            " " +
+            (
+              days === 1
+                ? "day"
+                : "days"
+            );
+
+        }
+
+
+        const className =
+          days < 0
+            ? "expired"
+            : days <= 30
+              ? "soon"
+              : "";
+
+
+        return `
+          <article class="doc">
+
+            <div class="doc-top">
+
+              <div>
+
+                <div class="doc-name">
+                  ${esc(d.name)}
+                </div>
+
+                <div class="doc-type">
+                  ${esc(d.type)}
+                </div>
+
+              </div>
+
+              <span class="status ${className}">
+                ${status}
+              </span>
+
+            </div>
+
+            <div class="doc-date">
+              Expiry: ${fmt(d.expiry)}
+            </div>
+
+            <div class="actions">
+
+              <button
+                type="button"
+                class="secondary"
+                onclick="office(${i})"
+              >
+                📍 Find office
+              </button>
+
+              <button
+                type="button"
+                class="danger"
+                onclick="removeDoc(${i})"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </article>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* SAVE */
+
+form.addEventListener(
+  "submit",
+  async function(event) {
+
+    event.preventDefault();
+
+
+    const documentName =
+      nameInput.value.trim();
+
+    const documentType =
+      typeInput.value;
+
+    const expiryDate =
+      expiryInput.value;
+
+
+    if (
+      !documentName ||
+      !documentType ||
+      !expiryDate
+    ) {
+
+      alert(
+        "Please fill in all fields."
+      );
+
+      return;
+
+    }
+
+
+    const documentData = {
+
+      id:
+        Date.now().toString(),
+
+      name:
+        documentName,
+
+      type:
+        documentType,
+
+      expiry:
+        expiryDate
+
+    };
+
+
+    try {
+
+      /* Send document to Flask */
+
+      const response =
+        await fetch(
+          "/api/documents",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify(
+                documentData
+              )
+          }
+        );
+
+
+      const result =
+        await response.json();
+
+
+      if (!response.ok ||
+          !result.success) {
+
+        throw new Error(
+          result.error ||
+          "Save failed"
+        );
+
+      }
+
+
+      /*
+        Flask received it successfully.
+
+        We also keep a browser copy
+        until we connect a real database.
+      */
+
+      docs.push(
+        documentData
+      );
+
+      saveLocal();
+
+      form.reset();
+
+
+      alert(
+        "Document saved successfully!"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Save error:",
+        error
+      );
+
+      alert(
+        "Could not connect to the server."
+      );
+
+    }
+
+  }
+);
+
+
+/* DELETE */
+
+function removeDoc(index) {
+
+  if (
+    confirm(
+      "Delete this document from your browser vault?"
+    )
+  ) {
+
+    docs.splice(
+      index,
+      1
+    );
+
+    saveLocal();
+
+  }
+
+}
+
+
+/* FIND OFFICE */
+
+async function office(index) {
+
+  const documentType =
+    docs[index].type;
+
+  let url =
+    "/api/office-search?type=" +
+    encodeURIComponent(
+      documentType
+    );
+
+
+  function openMaps(apiUrl) {
+
+    fetch(apiUrl)
+
+      .then(
+        response =>
+          response.json()
+      )
+
+      .then(
+        data =>
+          window.open(
+            data.maps_url,
+            "_blank"
+          )
+      )
+
+      .catch(
+        error => {
+
+          console.error(
+            "Office search error:",
+            error
+          );
+
+        }
+      );
+
+  }
+
+
+  if (
+    navigator.geolocation
+  ) {
+
+    navigator.geolocation.getCurrentPosition(
+
+      function(position) {
+
+        openMaps(
+          url +
+          "&lat=" +
+          position.coords.latitude +
+          "&lon=" +
+          position.coords.longitude
+        );
+
+      },
+
+      function() {
+
+        openMaps(url);
+
+      }
+
+    );
+
+  } else {
+
+    openMaps(url);
+
+  }
+
+}
+
+
+/* EXPORT */
+
+exportButton.onclick =
+  function() {
+
+    const blob =
+      new Blob(
+        [
+          JSON.stringify(
+            docs,
+            null,
+            2
+          )
+        ],
+        {
+          type:
+            "application/json"
+        }
+      );
+
+
+    const url =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+    link.href = url;
+
+    link.download =
+      "docvault-backup.json";
+
+
+    document.body.appendChild(
+      link
+    );
+
+    link.click();
+
+    link.remove();
+
+
+    URL.revokeObjectURL(
+      url
+    );
+
+  };
+
+
+/* IMPORT */
+
+importButton.onclick =
+  function() {
+
+    fileInput.click();
+
+  };
+
+
+fileInput.onchange =
+  function(event) {
+
+    const file =
+      event.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload =
+      function() {
+
+        try {
+
+          const restored =
+            JSON.parse(
+              reader.result
+            );
+
+
+          if (
+            !Array.isArray(
+              restored
+            )
+          ) {
+
+            throw new Error(
+              "Invalid backup"
+            );
+
+          }
+
+
+          docs =
+            restored;
+
+
+          saveLocal();
+
+
+          alert(
+            "Backup restored."
+          );
+
+
+        } catch (error) {
+
+          alert(
+            "That backup file is not valid."
+          );
+
+        }
+
+      };
+
+
+    reader.readAsText(
+      file
+    );
+
+
+    fileInput.value = "";
+
+  };
+
+
+/* Initial display */
+
+render();
+
+</script>
+
+</body>
+</html>
 ```
-
